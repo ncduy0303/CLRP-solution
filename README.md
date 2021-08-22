@@ -14,7 +14,7 @@ Download pretrained roberta-large and deberta-large from: \
 https://huggingface.co/roberta-large \
 https://huggingface.co/microsoft/deberta-large \
 and save it in \
-`./pretrained/roberta-large`
+`./pretrained/roberta-large`\
 `./pretrained/deberta-large`
 
 
@@ -30,7 +30,7 @@ and save it as follows \
 `./extra_data/cbt_valid.txt` \
 `./extra_data/simple_english_wiki.txt`
 
-CLRP training data goes to \
+CLRP training data (download manually from Kaggle) goes to \
 `./data/train.csv` \
 `./data/test.csv`
 
