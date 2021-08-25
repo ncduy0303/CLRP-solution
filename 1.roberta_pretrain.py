@@ -35,7 +35,7 @@ def main():
         'min_lr': 4e-5,
         'low_lr': 2e-5,
         'n_epoch': 5,
-        'bs': 16,
+        'bs': 32,
         'ga': 1,
         'lr_scheduler_mul_factor': 2,
         'weight_decay': 0.01,
@@ -58,7 +58,7 @@ def main():
         num_train_epochs=config['n_epoch'],        # total number of training epochs
         overwrite_output_dir=True,
         per_device_train_batch_size=config['bs'],  # batch size per device during training
-        per_device_eval_batch_size=32,             # batch size for evaluation
+        per_device_eval_batch_size=64,             # batch size for evaluation
         weight_decay=0.01,                         # strength of weight decay
         logging_strategy='no',
         gradient_accumulation_steps = config['ga'],

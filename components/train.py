@@ -57,9 +57,9 @@ def run_fold_ft(fold, config, train_data, tokenizer, t_bar):
             cls_loss = nn.MSELoss()(torch.squeeze(outputs,1),target)
 
             loss = cls_loss / config['accumulation_steps']
-
+            
             total_loss += torch.pow(nn.MSELoss()(torch.squeeze(outputs,1),target),0.5).item() / config['accumulation_steps']
-
+    
             loss.backward()
 
             if (count+1) % config['accumulation_steps'] == 0:
@@ -71,14 +71,13 @@ def run_fold_ft(fold, config, train_data, tokenizer, t_bar):
             else:
                 count += 1
 
-            #only save in radius of certain step
+            # Only save in radius of certain step
             if step >= (config['save_center']-config['save_radius']) and step <= (config['save_center']+config['save_radius']):
                 val_step = 1
             do_val = True
             if config['only_val_in_radius']:
                 if step < (config['save_center']-config['save_radius']) or step > (config['save_center']+config['save_radius']):
                     do_val = False
-
             if ((step+1) % val_step == 0 and count == 0) and do_val:
                 model.eval()
                 l_val = nn.MSELoss(reduction='sum')
@@ -93,7 +92,7 @@ def run_fold_ft(fold, config, train_data, tokenizer, t_bar):
 
                         val_loss = cls_loss_val
 
-                        total_loss_val+=val_loss.item()
+                        total_loss_val += val_loss.item()
                     total_loss_val /= len(val_dataset)
                     total_loss_val = total_loss_val**0.5
 
@@ -101,7 +100,7 @@ def run_fold_ft(fold, config, train_data, tokenizer, t_bar):
                         # Saves model with lower loss
                         min_step = step
                         min_valid_loss = total_loss_val
-                        # Print('min loss updated to ', min_valid_loss, ' at step ', min_step)
+                        print('min loss updated to ', min_valid_loss, ' at step ', min_step)
                         if not os.path.isdir('./models'):
                             os.mkdir('./models')
                         if not os.path.isdir(config['save_path']):
@@ -113,7 +112,7 @@ def run_fold_ft(fold, config, train_data, tokenizer, t_bar):
                 model.train()
             step += 1
             t_bar.update(1)
-    del model,train_dataset,train_loader,val_dataset,val_loader
+    del model, train_dataset, train_loader, val_dataset, val_loader
     gc.collect()
     torch.cuda.empty_cache()
     return min_valid_loss, min_step
@@ -124,7 +123,7 @@ def train_ft(config):
     train_data = pd.read_csv('./data/train.csv')
     train_data = create_folds(train_data, num_splits=5)
     model_dir = config['model_dir']
-    tokenizer = AutoTokenizer.from_pretrained(model_dir, local_files_only=True, model_max_length=256)
+    tokenizer = AutoTokenizer.from_pretrained(model_dir, model_max_length=256)
     
     t_bar = tqdm(total=((2834*0.8//config['batch_size'])+1)*config['num_epoch']*config['n_folds'])
     train_losses = []
@@ -140,7 +139,7 @@ def train_pseudo(config, label_path):
     train_data = create_folds(train_data, num_splits=5)
     
     model_dir = config['model_dir']
-    tokenizer = AutoTokenizer.from_pretrained(model_dir, local_files_only=True, model_max_length=256)
+    tokenizer = AutoTokenizer.from_pretrained(model_dir, model_max_length=256)
     
     train_dataset = CLRPDataset_pseudo(True,label_path,train_data,tokenizer)
     t_bar = tqdm(total=((len(train_dataset)//config['batch_size'])+1)*config['num_epoch'])
@@ -215,7 +214,7 @@ def train_pseudo(config, label_path):
                 if min_valid_loss > total_loss_val:
                     min_step = step
                     min_valid_loss = total_loss_val
-                    # Print('min loss updated to ',min_valid_loss,' at step ',min_step)
+                    print('min loss updated to ', min_valid_loss, ' at step ', min_step)
                     # Saving State Dict
                     if not os.path.isdir(config['save_path']):
                         os.mkdir(config['save_path'])
@@ -236,7 +235,7 @@ def train_pseudo_5fold(config, label_path):
     train_data = pd.read_csv('./data/train.csv')
     train_data = create_folds(train_data, num_splits=5)
     model_dir = config['model_dir']
-    tokenizer = AutoTokenizer.from_pretrained(model_dir, local_files_only=True, model_max_length=256)
+    tokenizer = AutoTokenizer.from_pretrained(model_dir, model_max_length=256)
 
     min_val_losses = []
     for fold in range(config['n_folds']):
@@ -327,7 +326,7 @@ def train_pseudo_5fold(config, label_path):
                     model.train()
                 step += 1
                 t_bar.update(1)
-        del model,train_dataset,train_loader,val_dataset,val_loader
+        del model, train_dataset, train_loader, val_dataset, val_loader
         gc.collect()
         torch.cuda.empty_cache()
         min_val_losses.append(min_valid_loss)

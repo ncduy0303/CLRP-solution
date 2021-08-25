@@ -71,8 +71,8 @@ def generate_config(model_type,pretrained_path,save_path,lr_type,lr_setting):
               'seed_': 88888888,
               'reini_head':False,
               'only_val_in_radius': True,
-              'save_center': 330,
-              'save_radius': 5,
+              'save_center': 330 // 2, # Scale with batch_size
+              'save_radius': 5 // 2,   # Scale with batch_size
               'betas': (0.9, 0.999),
          }
     config['pretrained_path'] = pretrained_path
@@ -80,15 +80,15 @@ def generate_config(model_type,pretrained_path,save_path,lr_type,lr_setting):
     config['lr_type'] = lr_type
     if model_type == 'ro':
         config['model_dir'] = 'roberta-large'
-        config['batch_size'] = 32
+        config['batch_size'] = 16 * 2
         config['accumulation_steps'] = 1
         config['pseudo_save_name'] = 'roberta_large_single.pt'
     elif model_type == 'de':
-        config['model_dir'] = 'deberta-large'
-        config['batch_size'] = 16
+        config['model_dir'] = 'microsoft/deberta-large'
+        config['batch_size'] = 8 * 2
         config['accumulation_steps'] = 2
-        config['save_center'] = 660
-        config['save_radius'] = 10
+        config['save_center'] = 660 // 2 # Scale with batch_size
+        config['save_radius'] = 10 // 2  # Scale with batch_size
         config['pseudo_save_name'] = 'deberta_large_single.pt'
     
     if lr_setting == '2':

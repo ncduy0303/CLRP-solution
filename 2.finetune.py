@@ -14,9 +14,9 @@ import sys
 import numpy as np
 
 def main():
-    ###
-    # training using provided training data
-    ###
+    '''
+    Training using provided training data
+    '''
     config = generate_config(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
     losses = train_ft(config)
     print(np.mean(losses), '\n', losses)

@@ -73,7 +73,7 @@ def main():
             cat = np.concatenate(preds,axis=1)
             pred = np.mean(cat,axis=1)
         data['target'] = pred
-        data.to_csv(target_path,index=False)
+        data.to_csv(target_path, index=False)
     
 if __name__ == '__main__':
     main()
