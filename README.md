@@ -1,24 +1,12 @@
 # CLRP-solution
 ### Requirements:
-numpy==1.20.2 \
-pandas==1.2.4 \
-transformers==4.5.1 \
 torch==1.9.0+cu111 \
-tqdm==4.60.0
+transformers==4.9.2 \
 
-24GB VRAM
+Tested on a RTX A6000 with 48GB VRAM
 
 ### Prep:
-`./download_models.sh` \
-Download pretrained roberta-large and deberta-large from: \
-https://huggingface.co/roberta-large \
-https://huggingface.co/microsoft/deberta-large \
-and save it in \
-`./pretrained/roberta-large`\
-`./pretrained/deberta-large`
-
-
-`./download_extra_data.sh` \
+Just run `./download_extra_data.sh` or \\
 Download \
 Children's Book Test from: \
 https://research.fb.com/downloads/babi/ \

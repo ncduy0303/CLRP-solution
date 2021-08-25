@@ -15,13 +15,13 @@ def main():
         cbt_te = f.read()
     with open('./extra_data/cbt_train.txt') as f:
         cbt_tr = f.read()
-    cbt = cbt_v+cbt_te+cbt_tr
+    cbt = cbt_v + cbt_te + cbt_tr
     cbt = cbt.replace('`',"'")
     cbt = cbt.replace("''",'"')
-    _=[all_data_split.append(cbt[0+i:length+i]) for i in range(0, len(cbt), length)]
+    _ = [all_data_split.append(cbt[0+i:length+i]) for i in range(0, len(cbt), length)]
     df = pd.DataFrame()
     df['excerpt'] = all_data_split
     df.to_csv('./extra_data/extra_excerpt.csv',index=False)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

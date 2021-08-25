@@ -8,7 +8,7 @@ from sklearn.model_selection import KFold,StratifiedKFold
 def seed_everything(seed):
     random.seed(seed)
     np.random.seed(seed)
-    os.environ["PYTHONHASHSEED"] = str(seed)
+    os.environ['PYTHONHASHSEED'] = str(seed)
 
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
@@ -17,34 +17,32 @@ def seed_everything(seed):
     torch.backends.cudnn.deterministic = True
     
 def create_folds(data, num_splits):
-    # we create a new column called kfold and fill it with -1
-    data["kfold"] = -1
+    # We create a new column called kfold and fill it with -1
+    data['kfold'] = -1
     
-    # the next step is to randomize the rows of the data
+    # The next step is to randomize the rows of the data
     data = data.sample(frac=1).reset_index(drop=True)
 
-    # calculate number of bins by Sturge's rule
+    # Calculate number of bins by Sturge's rule
     # I take the floor of the value, you can also
-    # just round it
+    # Just round it
     num_bins = int(np.floor(1 + np.log2(len(data))))
     
-    # bin targets
-    data.loc[:, "bins"] = pd.cut(
-        data["target"], bins=num_bins, labels=False
-    )
+    # Bin targets
+    data.loc[:, 'bins'] = pd.cut(data['target'], bins=num_bins, labels=False)
     
-    # initiate the kfold class from model_selection module
+    # Initiate the kfold class from model_selection module
     kf = StratifiedKFold(n_splits=num_splits)
     
-    # fill the new kfold column
-    # note that, instead of targets, we use bins!
+    # Fill the new kfold column
+    # Note that, instead of targets, we use bins!
     for f, (t_, v_) in enumerate(kf.split(X=data, y=data.bins.values)):
         data.loc[v_, 'kfold'] = f
     
-    # drop the bins column
-    data = data.drop("bins", axis=1)
+    # Drop the bins column
+    data = data.drop('bins', axis=1)
 
-    # return dataframe with folds
+    # Return dataframe with folds
     return data
 
 def init_params(module_lst):
@@ -55,7 +53,7 @@ def init_params(module_lst):
     return
 
 def generate_config(model_type,pretrained_path,save_path,lr_type,lr_setting):
-    config = {'model_dir': './pretrained/roberta-large/',
+    config = {'model_dir': 'roberta-large',
               'n_folds': 5,
               'num_epoch': 3,
               'weight_decay': 0.01,
@@ -81,13 +79,13 @@ def generate_config(model_type,pretrained_path,save_path,lr_type,lr_setting):
     config['save_path'] = save_path
     config['lr_type'] = lr_type
     if model_type == 'ro':
-        config['model_dir'] = './pretrained/roberta-large/'
-        config['batch_size'] = 16
+        config['model_dir'] = 'roberta-large'
+        config['batch_size'] = 32
         config['accumulation_steps'] = 1
         config['pseudo_save_name'] = 'roberta_large_single.pt'
     elif model_type == 'de':
-        config['model_dir'] = './pretrained/deberta-large/'
-        config['batch_size'] = 8
+        config['model_dir'] = 'deberta-large'
+        config['batch_size'] = 16
         config['accumulation_steps'] = 2
         config['save_center'] = 660
         config['save_radius'] = 10

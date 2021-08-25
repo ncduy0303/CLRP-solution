@@ -1,10 +1,10 @@
-#args:
-#1. source file
-#2. target file
-#3. num of models
-#4. model dir
-#5. mode: 0=label data 1=5fold labels
-#...
+# args:
+# 1. source file
+# 2. target file
+# 3. num of models
+# 4. model dir
+# 5. mode: 0=label data 1=5fold labels
+# ...
 
 import sys
 import numpy as np
@@ -13,9 +13,9 @@ import pandas as pd
 import os
 
 def main():
-    ###
-    # generate prediction for 1. inference 2. 5fold labels
-    ###
+    '''
+    Generate prediction for (1. inference, 2. 5fold labels)
+    '''
     source_path = sys.argv[1]
     target_path = sys.argv[2]
     num_of_models = int(sys.argv[3])
@@ -28,7 +28,7 @@ def main():
         preds.append(get_single_model(model_dirs[i],data))
         
     if sys.argv[4] == '1':
-        #hard coded weight for when one of each of roberta and deberta is used to predict
+        # Hard coded weight for when one of each of roberta and deberta is used to predict
         if num_of_models == 2 and 'roberta' in model_dirs[0] and 'deberta' in model_dirs[1]:
             preds_fold0 = [pred[0] for pred in preds]
             preds_fold1 = [pred[1] for pred in preds]
@@ -75,5 +75,5 @@ def main():
         data['target'] = pred
         data.to_csv(target_path,index=False)
     
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

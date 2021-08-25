@@ -1,13 +1,13 @@
 from transformers import AdamW
 import torch
 
-def get_optimizer(model,config):
-    # divide encoder layers into 3 groups and assign different lr
-    # head lr is set separately
+def get_optimizer(model, config):
+    # Divide encoder layers into 3 groups and assign different lr
+    # Head lr is set separately
     layers = len(model.base.encoder.layer)
-    no_decay = ["bias", "LayerNorm.weight"]
-    high_lr_head = ["layer_weights"]
-    ### not in high_lr_head
+    no_decay = ['bias', 'LayerNorm.weight']
+    high_lr_head = ['layer_weights']
+    ### Not in high_lr_head
     params_lst = [{'params':[p for n, p in model.named_parameters() 
                              if not any(en in n for en,ep in model.base.encoder.layer.named_parameters())
                              and not any(nd in n for nd in no_decay)
@@ -16,25 +16,25 @@ def get_optimizer(model,config):
                    'weight_decay': config['weight_decay']
                   }]
     params_lst.append({'params':[p for n, p in model.named_parameters() 
-                             if not any(en in n for en,ep in model.base.encoder.layer.named_parameters())
-                             and any(nd in n for nd in no_decay)
-                             and not any(nd in n for nd in high_lr_head)], 
+                                 if not any(en in n for en,ep in model.base.encoder.layer.named_parameters())
+                                 and any(nd in n for nd in no_decay)
+                                 and not any(nd in n for nd in high_lr_head)], 
                        'lr': config['head_lr'],
                        'weight_decay': 0.0
                       })
     ###
-    ### in high_lr_head
+    ### In high_lr_head
     params_lst.append({'params':[p for n, p in model.named_parameters() 
-                             if not any(en in n for en,ep in model.base.encoder.layer.named_parameters())
-                             and not any(nd in n for nd in no_decay)
-                             and any(lw in n for lw in high_lr_head)], 
+                                 if not any(en in n for en,ep in model.base.encoder.layer.named_parameters())
+                                 and not any(nd in n for nd in no_decay)
+                                 and any(lw in n for lw in high_lr_head)], 
                    'lr': config['weight_lr'],
                    'weight_decay': config['weight_decay']
                   })
     params_lst.append({'params':[p for n, p in model.named_parameters() 
-                             if not any(en in n for en,ep in model.base.encoder.layer.named_parameters())
-                             and any(nd in n for nd in no_decay)
-                             and any(lw in n for lw in high_lr_head)], 
+                                 if not any(en in n for en,ep in model.base.encoder.layer.named_parameters())
+                                 and any(nd in n for nd in no_decay)
+                                 and any(lw in n for lw in high_lr_head)], 
                        'lr': config['weight_lr'],
                        'weight_decay': 0.0
                       })
@@ -59,11 +59,11 @@ def get_optimizer(model,config):
     
     return optimizer
 
-def get_optimizer_robertaMLM(model,config):
+def get_optimizer_robertaMLM(model, config):
     layers = len(model.roberta.encoder.layer)
-    no_decay = ["bias", "LayerNorm.weight"]
-    high_lr_head = ["layer_weights"]
-    ### not in high_lr_head
+    no_decay = ['bias', 'LayerNorm.weight']
+    high_lr_head = ['layer_weights']
+    ### Not in high_lr_head
     params_lst = [{'params':[p for n, p in model.named_parameters() 
                              if not any(en in n for en,ep in model.roberta.encoder.layer.named_parameters())
                              and not any(nd in n for nd in no_decay)
@@ -72,25 +72,25 @@ def get_optimizer_robertaMLM(model,config):
                    'weight_decay': config['weight_decay']
                   }]
     params_lst.append({'params':[p for n, p in model.named_parameters() 
-                             if not any(en in n for en,ep in model.roberta.encoder.layer.named_parameters())
-                             and any(nd in n for nd in no_decay)
-                             and not any(nd in n for nd in high_lr_head)], 
+                                 if not any(en in n for en,ep in model.roberta.encoder.layer.named_parameters())
+                                 and any(nd in n for nd in no_decay)
+                                 and not any(nd in n for nd in high_lr_head)], 
                        'lr': config['head_lr'],
                        'weight_decay': 0.0
                       })
     ###
-    ### in high_lr_head
+    ### In high_lr_head
     params_lst.append({'params':[p for n, p in model.named_parameters() 
-                             if not any(en in n for en,ep in model.roberta.encoder.layer.named_parameters())
-                             and not any(nd in n for nd in no_decay)
-                             and any(lw in n for lw in high_lr_head)], 
+                                 if not any(en in n for en,ep in model.roberta.encoder.layer.named_parameters())
+                                 and not any(nd in n for nd in no_decay)
+                                 and any(lw in n for lw in high_lr_head)], 
                    'lr': config['base_lr'],
                    'weight_decay': config['weight_decay']
                   })
     params_lst.append({'params':[p for n, p in model.named_parameters() 
-                             if not any(en in n for en,ep in model.roberta.encoder.layer.named_parameters())
-                             and any(nd in n for nd in no_decay)
-                             and any(lw in n for lw in high_lr_head)], 
+                                 if not any(en in n for en,ep in model.roberta.encoder.layer.named_parameters())
+                                 and any(nd in n for nd in no_decay)
+                                 and any(lw in n for lw in high_lr_head)], 
                        'lr': config['base_lr'],
                        'weight_decay': 0.0
                       })
@@ -116,9 +116,9 @@ def get_optimizer_robertaMLM(model,config):
     return optimizer
 
 def get_scheduler(optimizer, total_train_steps, config):
-    #two schedules:
-    #1. custom is similar to linear decay with warmup
-    #2. 3stage is simply halving every 1/3 steps
+    # Two schedules:
+    # 1. custom is similar to linear decay with warmup
+    # 2. 3stage is simply halving every 1/3 steps
     def lr_lambda_1(step):
         total_steps = total_train_steps
         w = int(config['warm_up_ratio']*total_steps)

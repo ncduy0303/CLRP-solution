@@ -9,13 +9,13 @@ class MLMDataset(torch.utils.data.Dataset):
             self.data = texts
         else:
             self.data = texts
-        ### only use portion of data
+        ### Only use portion of data
         length = int(len(self.data)/1)
         self.data = self.data[:length]
         ###
 
     def __getitem__(self, idx):
-        item = self.tokenizer(self.data[idx], padding='max_length', is_split_into_words = False,truncation=True, return_tensors="pt")
+        item = self.tokenizer(self.data[idx], padding='max_length', is_split_into_words = False,truncation=True, return_tensors='pt')
         
         item['labels'] = item['input_ids'].clone()
         
@@ -49,16 +49,14 @@ class CLRPDataset_finetune(torch.utils.data.Dataset):
         self.tokenizer = tokenizer
         
         if is_train:
-            df = train_data.query(f"kfold != {fold}")[['excerpt','target']]
+            df = train_data.query(f'kfold != {fold}')[['excerpt','target']]
         else:
-            df = train_data.query(f"kfold == {fold}")[['excerpt','target']]
+            df = train_data.query(f'kfold == {fold}')[['excerpt','target']]
         self.excerpt = df['excerpt'].to_numpy()
         self.target = df['target'].to_numpy()
 
     def __getitem__(self, idx):
-        tokenized = self.tokenizer(self.excerpt[idx],return_tensors='pt',
-                              max_length=256,
-                              padding='max_length',truncation=True)
+        tokenized = self.tokenizer(self.excerpt[idx],return_tensors='pt', max_length=256, padding='max_length', truncation=True)
         
         item = {}
         item['input_ids'] = tokenized['input_ids'][0]
@@ -76,12 +74,8 @@ class CLRPDataset_pred(torch.utils.data.Dataset):
         self.tokenizer = tokenizer
     
     def __getitem__(self,idx):
-        encode = self.tokenizer(self.excerpt[idx],return_tensors='pt',
-                                max_length=256,
-                                padding='max_length',truncation=True)
-        encoded = {'input_ids':encode['input_ids'][0],
-                   'attention_mask':encode['attention_mask'][0]
-                  }
+        encode = self.tokenizer(self.excerpt[idx], return_tensors='pt', max_length=256, padding='max_length', truncation=True)
+        encoded = {'input_ids': encode['input_ids'][0], 'attention_mask': encode['attention_mask'][0]}
         
         return encoded
     
@@ -92,11 +86,11 @@ class CLRPDataset_pseudo(torch.utils.data.Dataset):
     def __init__(self, is_train, label_path, train_data, tokenizer):
         self.tokenizer = tokenizer
         if is_train:
-            df1 = pd.read_csv(label_path+"labeled_extra_0.csv")
-            df2 = pd.read_csv(label_path+"labeled_extra_1.csv")
-            df3 = pd.read_csv(label_path+"labeled_extra_2.csv")
-            df4 = pd.read_csv(label_path+"labeled_extra_3.csv")
-            df5 = pd.read_csv(label_path+"labeled_extra_4.csv")
+            df1 = pd.read_csv(label_path+'labeled_extra_0.csv')
+            df2 = pd.read_csv(label_path+'labeled_extra_1.csv')
+            df3 = pd.read_csv(label_path+'labeled_extra_2.csv')
+            df4 = pd.read_csv(label_path+'labeled_extra_3.csv')
+            df5 = pd.read_csv(label_path+'labeled_extra_4.csv')
             self.excerpt = df1['excerpt'].to_numpy()
             self.target = (df1['target'] + df2['target'] + df3['target'] + df4['target'] + df5['target']).to_numpy()/5
         else:
@@ -104,9 +98,7 @@ class CLRPDataset_pseudo(torch.utils.data.Dataset):
             self.target = train_data['target'].to_numpy()
 
     def __getitem__(self, idx):
-        tokenized = self.tokenizer(self.excerpt[idx],return_tensors='pt',
-                              max_length=256,
-                              padding='max_length',truncation=True)
+        tokenized = self.tokenizer(self.excerpt[idx], return_tensors='pt', max_length=256, padding='max_length', truncation=True)
         
         item = {}
         item['input_ids'] = tokenized['input_ids'][0]
@@ -118,25 +110,22 @@ class CLRPDataset_pseudo(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.target)
 
-#reads 5 fold labeled data and mix 3x training data in
+# Reads 5 fold labeled data and mix 3x training data in
 class CLRPDataset_pseudo_5fold(torch.utils.data.Dataset):
     def __init__(self, is_train, fold, train_data, tokenizer, label_path):
         self.tokenizer = tokenizer
         if is_train:
-            df = pd.read_csv(label_path+f"labeled_extra_{fold}.csv")
-            tr = train_data.query(f"kfold != {fold}")[['excerpt','target']]
+            df = pd.read_csv(label_path+f'labeled_extra_{fold}.csv')
+            tr = train_data.query(f'kfold != {fold}')[['excerpt','target']]
             df = pd.concat([df,tr,tr,tr], ignore_index=True)
             df = df.sample(frac=1).reset_index(drop=True)
         else:
-            df = train_data.query(f"kfold == {fold}")[['excerpt','target']]
+            df = train_data.query(f'kfold == {fold}')[['excerpt','target']]
         self.excerpt = df['excerpt'].to_numpy()
         self.target = df['target'].to_numpy()
-        ###
 
     def __getitem__(self, idx):
-        tokenized = self.tokenizer(self.excerpt[idx],return_tensors='pt',
-                              max_length=256,
-                              padding='max_length',truncation=True)
+        tokenized = self.tokenizer(self.excerpt[idx], return_tensors='pt', max_length=256, padding='max_length', truncation=True)
         
         item = {}
         item['input_ids'] = tokenized['input_ids'][0]
