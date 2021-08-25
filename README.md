@@ -1,12 +1,13 @@
 # CLRP-solution
 ### Requirements:
 torch==1.9.0+cu111 \
-transformers==4.9.2 \
+transformers==4.9.2 
 
 Tested on a RTX A6000 with 48GB VRAM
 
 ### Prep:
-Just run `./download_extra_data.sh` or \\
+Just run `./download_extra_data.sh` or
+
 Download \
 Children's Book Test from: \
 https://research.fb.com/downloads/babi/ \
@@ -18,7 +19,7 @@ and save it as follows \
 `./extra_data/cbt_valid.txt` \
 `./extra_data/simple_english_wiki.txt`
 
-CLRP training data (download manually from Kaggle) goes to \
+CLRP training data (need to download manually from Kaggle) goes to \
 `./data/train.csv` \
 `./data/test.csv`
 
